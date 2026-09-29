@@ -1,4 +1,4 @@
-# Open Companion Platform Code Signing Policy
+﻿# Open Companion Platform Code Signing Policy
 
 This document defines the code-signing policy for official Open Companion Platform (OCP) Windows releases.
 
@@ -13,7 +13,7 @@ The purpose of code signing is to give users a verifiable connection between the
 ## Covered project
 
 - Project: **Open Companion Platform (OCP)**
-- Source repository: https://github.com/opencompanionplatform/ocp-platform
+- Source repository: https://github.com/opencompanionplatform/ocp-desktop
 - Official release repository: https://github.com/opencompanionplatform/ocp-releases
 - Official releases: https://github.com/opencompanionplatform/ocp-releases/releases
 - License: Apache License 2.0
@@ -40,7 +40,7 @@ OCP is currently maintained as an independent community project.
 
 ### Committer and reviewer
 
-**Watchara Warin** โ€” project maintainer.
+**Watchara Warin** เนโฌโ€ project maintainer.
 
 Committers are trusted to make changes to the OCP source repository. Contributions from people who are not trusted committers must be reviewed by an OCP maintainer before they are merged.
 
@@ -50,7 +50,7 @@ https://github.com/opencompanionplatform
 
 ### Approver
 
-**Watchara Warin** โ€” project maintainer and current release signing approver.
+**Watchara Warin** เนโฌโ€ project maintainer and current release signing approver.
 
 The approver is responsible for checking that a signing request corresponds to the intended OCP release source revision and approved build before authorizing signing.
 
@@ -95,3 +95,4 @@ Release pages should include or link to this **Code signing policy** and retain 
 ## Policy changes
 
 Changes to this document, release workflows, or signing configuration are treated as security-sensitive project changes and should be reviewed before they take effect.
+
