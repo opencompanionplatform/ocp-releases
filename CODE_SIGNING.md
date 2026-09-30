@@ -1,4 +1,4 @@
-# Open Companion Platform Code Signing Policy
+﻿# Open Companion Platform Code Signing Policy
 
 This document defines the code-signing policy for official Open Companion Platform (OCP) Windows releases.
 
@@ -74,7 +74,7 @@ OCP's privacy policy is documented in [PRIVACY.md](PRIVACY.md).
 
 Public privacy policy:
 
-https://ocp-store-dp4.pages.dev/privacy/
+https://ocp-store-prd.pages.dev/privacy/
 
 OCP may communicate with network services when the user specifically requests or enables online functions such as account sign-in, the Store, cloud synchronization, updates, purchases, or optional AI/voice services. The privacy policy describes these behaviors and the relevant categories of third-party services.
 
