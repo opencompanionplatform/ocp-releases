@@ -3,7 +3,7 @@
 Official Open Companion Platform (OCP) Windows release artifacts and signed update manifests.
 
 - Source repository: https://github.com/opencompanionplatform/ocp-desktop
-- Privacy policy: https://ocp-store.pages.dev/privacy/
+- Privacy policy: https://ocp-store-dp4.pages.dev/privacy/
 - Security policy: https://github.com/opencompanionplatform/ocp-desktop/blob/main/SECURITY.md
 
 ## Code signing policy
