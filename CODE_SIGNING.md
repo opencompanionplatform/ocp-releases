@@ -1,98 +1,90 @@
-﻿# Open Companion Platform Code Signing Policy
+# OCP Code Signing & Release Integrity Policy
 
-This document defines the code-signing policy for official Open Companion Platform (OCP) Windows releases.
+This document explains how Windows artifacts published by [Open Companion Platform](https://github.com/opencompanionplatform/ocp-releases) are identified, verified, and—when available—signed.
 
-## Code signing policy
+> [!IMPORTANT]
+> **There is currently no approved OCP Stable release.** Public preview and test artifacts may be **unsigned**. An artifact must not be described as Authenticode-signed, independently reproducible, or production-trusted unless its own published evidence supports that claim.
 
-**Free code signing provided by SignPath.io, certificate by SignPath Foundation.**
+## Project and release channels
 
-This is the project's target Production signing policy while the SignPath Foundation application is being completed. No OCP artifact may be described as SignPath-signed until it has actually been processed by the approved OCP SignPath configuration.
+- **Project:** Open Companion Platform (OCP)
+- **Public Desktop source:** [opencompanionplatform/ocp-desktop](https://github.com/opencompanionplatform/ocp-desktop)
+- **Release distribution:** [opencompanionplatform/ocp-releases](https://github.com/opencompanionplatform/ocp-releases/releases)
+- **Desktop source license:** [Apache-2.0](https://github.com/opencompanionplatform/ocp-desktop/blob/main/LICENSE)
 
-The purpose of code signing is to give users a verifiable connection between the public OCP source repository, the automated build that produced a release, and the Windows binaries distributed by the project.
+Local/Test/POC builds are not approved production releases. Public Beta builds must clearly disclose remaining limitations and actual signing status. A Stable designation requires explicit release approval and completion of the project's acceptance and provenance gates.
 
-## Covered project
+## Current signing status
 
-- Project: **Open Companion Platform (OCP)**
-- Source repository: https://github.com/opencompanionplatform/ocp-desktop
-- Official release repository: https://github.com/opencompanionplatform/ocp-releases
-- Official releases: https://github.com/opencompanionplatform/ocp-releases/releases
-- License: Apache License 2.0
+OCP's earlier **SignPath Foundation application was not approved**. The project therefore **does not claim sponsorship, a SignPath Foundation certificate, or SignPath signing of its releases**. SignPath is not a prerequisite in the current release plan.
 
-Only OCP artifacts built from source controlled by the Open Companion Platform project may be submitted under the OCP signing configuration.
+A future authenticode signing provider may be adopted after appropriate review and configuration. Until then, unsigned installers must be explicitly labeled **UNSIGNED** and should not be presented to end users as identity-verified software.
 
-## Release provenance
+**Important distinctions:**
 
-Official signed artifacts must:
+| Control | What it establishes | What it does *not* establish |
+| --- | --- | --- |
+| **SHA-256 checksum** | Downloaded bytes match the published digest | Publisher identity or trustworthy source |
+| **Authenticode signature** | Windows binary is signed by the certificate holder, subject to certificate validity | That software has passed OCP acceptance |
+| **Signed update manifest** | Authenticity/integrity of an update descriptor under the configured trusted key | Authenticode signing of its executables |
+| **Source provenance** | Traceability between public source revision, approved workflow and artifact | Byte-identical reproducibility without a separate verification build |
 
-1. originate from the public OCP source repository;
-2. correspond to an approved release revision/tag;
-3. be built by the project's approved automated GitHub Actions workflow;
-4. preserve enough build metadata to trace the artifact to its source revision and build run;
-5. pass the release validation gates required by the repository;
-6. be manually approved for signing by an authorized OCP approver;
-7. be published only through an official Open Companion Platform release channel.
+An update manifest with `unsigned` in its filename is **not trusted production update metadata**.
 
-Release and signing workflow changes are security-sensitive changes and must be reviewed accordingly.
+## Source and artifact provenance requirements
 
-## Signing roles
+Before a production release is approved, maintainers should record and verify:
 
-OCP is currently maintained as an independent community project.
+1. The exact public `ocp-desktop` source revision and approved release tag.
+2. A clean, reviewable source tree and any synchronized public-source export evidence.
+3. Approved CI/release workflow identity and build inputs for **each architecture**.
+4. Passing unit, integration, package, and security tests for the relevant release candidate.
+5. Artifact names, architecture, hashes, immutable version metadata, and release notes.
+6. Independent build comparison evidence where reproducibility is claimed.
+7. Clean-install, cold-start, upgrade, rollback, and application behavior acceptance on the supported architectures.
+8. Manual release approval before creating or promoting an official Stable tag.
 
-### Committer and reviewer
+A preview may be published with **documented exceptions**, provided its experimental nature and unsigned status are unmistakable. A skipped gate is not a passing gate.
 
-**Watchara Warin** เนโฌโ€ project maintainer.
+## Signing scope and upstream software
 
-Committers are trusted to make changes to the OCP source repository. Contributions from people who are not trusted committers must be reviewed by an OCP maintainer before they are merged.
+OCP-owned components may include the launcher, kernel, native companion host, update checker, GDExtension, Desktop Shell, and Windows setup executable. Each artifact's signature status must be verified rather than inferred from another file in the bundle.
 
-GitHub organization:
+The Windows Godot Runtime is an **upstream Godot derivative** used to host OCP's project/PCK. The build process may adjust the upstream executable's Windows per-monitor DPI-awareness manifest. That edit invalidates the upstream Authenticode signature; the distributed derivative preserves Godot's upstream product identity and is **not represented as an OCP-authored or OCP-signed executable**. This exception must be documented when publishing OCP-owned signed artifacts.
 
-https://github.com/opencompanionplatform
+Third-party binaries and packaged content remain subject to their own licenses, notices, and provenance requirements.
 
-### Approver
+## Key management and release approval
 
-**Watchara Warin** เนโฌโ€ project maintainer and current release signing approver.
+- Maintainers with release access must use multi-factor authentication.
+- Production signing credentials and update-manifest private keys must never be committed to a public repository or attached to release assets.
+- Production signing should use an appropriately protected approval environment with restricted access and audit records.
+- Updates, signing rules, trust roots, and release workflow changes require review as security-sensitive changes.
+- Do not sign or promote builds from an unreviewed dirty working tree.
+- Signatures and provenance should be independently verified before publication.
 
-The approver is responsible for checking that a signing request corresponds to the intended OCP release source revision and approved build before authorizing signing.
+These are release policy requirements, **not claims that the associated production controls have already been deployed**.
 
-As the maintainer team grows, these roles may be delegated to documented GitHub organization teams. This policy must be updated when signing responsibilities change.
+## User verification
 
-## Account security
+Download only from the [official release page](https://github.com/opencompanionplatform/ocp-releases/releases). Read the corresponding release notes, select the correct architecture, and compare any supplied `SHA256SUMS.txt` against:
 
-Maintainers with source-code or signing access must use multi-factor authentication for GitHub and SignPath accounts.
+```powershell
+Get-FileHash .\<downloaded-file> -Algorithm SHA256
+Get-AuthenticodeSignature .\<downloaded-installer.exe> |
+  Select-Object Status, SignerCertificate
+```
 
-Signing credentials or approval secrets must not be committed to the source repository.
+Avoid executing a build if its claimed signer or checksum does not match its release documentation. The absence of a signature on an explicitly unsigned Test/Preview build is expected but **not** evidence of authenticity.
 
-## Artifact identity
+## Security and privacy
 
-Signed OCP binaries must use project/product metadata identifying them as **Open Companion Platform** and must use the release version associated with the approved build.
+Report vulnerabilities privately using the [Desktop Security Policy](https://github.com/opencompanionplatform/ocp-desktop/blob/main/SECURITY.md). Contact: **opencompanionplatform@gmail.com**.
 
-Third-party/upstream binaries must not be presented as if they were built or authored by OCP. Any upstream components included in OCP distributions remain subject to their own licenses and provenance.
+See the [Privacy Policy](https://ocp-store-prd.pages.dev/privacy/) for optional network and hosted-service features.
 
-## Privacy
+## Maintenance
 
-OCP's privacy policy is documented in [PRIVACY.md](PRIVACY.md).
+This policy replaces historical language that described SignPath Foundation participation as pending. Any future signing provider or release policy change should be documented and reviewed before the corresponding artifacts are promoted.
 
-Public privacy policy:
-
-https://ocp-store-prd.pages.dev/privacy/
-
-OCP may communicate with network services when the user specifically requests or enables online functions such as account sign-in, the Store, cloud synchronization, updates, purchases, or optional AI/voice services. The privacy policy describes these behaviors and the relevant categories of third-party services.
-
-## Installation and uninstallation
-
-The official download location must describe the application and provide an installable or portable release as appropriate.
-
-Installed builds must support normal Windows uninstallation. Portable builds can be removed by exiting OCP and deleting the extracted application directory; user data may be removed separately if the user wants a complete reset.
-
-## Publication
-
-Signed artifacts must be published through the official release repository:
-
-https://github.com/opencompanionplatform/ocp-releases/releases
-
-Release pages should include or link to this **Code signing policy** and retain the required SignPath attribution above.
-
-## Policy changes
-
-Changes to this document, release workflows, or signing configuration are treated as security-sensitive project changes and should be reviewed before they take effect.
-
+Last reviewed: **10 October 2026**.
